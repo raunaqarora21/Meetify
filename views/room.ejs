@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    <script src="https://kit.fontawesome.com/3f1c67f185.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+
+    <script>
+
+        const ROOM_ID = '<%= roomId %>';
+    </script>
+
+</head>
+<body>
+    
+    <div class="main">
+        <div class="main__left">
+            <div class="main__videos">
+                <div id="video-grid">
+
+                </div>
+            </div>
+            <div class="main__controls">
+                <div class="main__controls__block">
+                    <div onclick="muteUnmute()" class="main__controls__button main__mute_button"">
+                        <i class="fas fa-microphone"></i>
+
+                        <span>Mute</span>
+                    </div>
+                    <div onclick="stopStart()" class="main__controls__button main__video_button">
+                        <i class="fas fa-video" ></i>
+
+                        <span>Stop Video</span>
+
+                    </div>
+                    
+                </div>
+                <div class="main__controls__block">
+                    <div class="main__controls__button">
+                        <i class="fas fa-shield-alt"></i>
+
+                        <span>Security</span>
+                    </div>
+                    <div class="main__controls__button">
+                        <i class="fas fa-user-friends"></i>
+
+                        <span>Participants</span>
+                    </div>
+                    <div class="main__controls__button">
+                        <i class="fas fa-comment-alt"></i>
+
+                        <span>Chat</span>
+                    </div>
+
+                </div>
+                <div class="main__controls__block">
+                  
+                    <div class="main__controls__button">
+                        <!-- <i class="fas fa-sign-out-alt"></i> -->
+
+                        <span class="leave_meeting">Leave Meeting</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="main__right">
+           <div class="main__header">
+               <h6>Chat</h6>
+           </div>
+           <div class="main__chat_window">
+               <ul class="messages">
+
+               </ul>
+           </div>
+           <div class="main__message_containter">
+                <input type="text" class="main__message_input" id = "chat_message" placeholder="Type a message...">
+           </div>
+        </div>
+    </div>
+    
+</body>
+
+</html>
+
+<script src="script.js"></script>
