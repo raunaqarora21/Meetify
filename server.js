@@ -20,7 +20,7 @@ app.get('/:room',(req,res) => {
 })
 
 // console.log(__dirname + '/public');
-server.listen(8888, () => {
+server.listen(process.env.PORT || 8888, () => {
     console.log('Example app listening on port 8888!');
 });
 
