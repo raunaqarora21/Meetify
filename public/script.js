@@ -1,19 +1,20 @@
 const myVideo = document.createElement('video');
 const videoGrid = document.getElementById('video-grid');
 const socket = io('/');
+const shareScreenButton = document.getElementById("share-screen");
 
 
 var myPeer = new Peer()
-
+var Peer_ID;
 
 var myVideoStream;
 var myVideoTrack;
 const peers = {};
-myVideo.muted = true;
+// myVideo.muted = true;
 
 
 navigator.mediaDevices.getUserMedia({
-    video: true,
+    // video: true,
     audio: true
 }).then((stream) => {
     navigator.mediaDevices.getUserMedia(
@@ -38,7 +39,7 @@ navigator.mediaDevices.getUserMedia({
     //     })
     // })
     
-    }).catch(
+    }).catch((err) =>{
         navigator.mediaDevices.getUserMedia(
             {
                 video: true,
@@ -53,7 +54,9 @@ navigator.mediaDevices.getUserMedia({
     
     
       
-    }));
+        });
+    
+});
 });
     
 
@@ -69,14 +72,19 @@ function connectToNewUser(userId, stream) {
     const call = myPeer.call(userId, stream);
     const video = document.createElement("video");
     call.on("stream", (userVideoStream) => {
-      
-                addVideoStream(
-                    video,
-                    userVideoStream,
-                    call.peer,
-                    data.user,
-                    data.admin
-                );
+        fetch(`/user?peer=${call.peer}&room=${ROOM_ID}`)
+        .then((res) => {
+            return res.json();
+        })
+        .then((data) => {
+            addVideoStream(
+                video,
+                userVideoStream,
+                call.peer,
+                data.user,
+                data.admin
+            );
+        });
             
     });
     call.on("close", () => {
@@ -87,7 +95,7 @@ function connectToNewUser(userId, stream) {
 
 
 const addVideoStream = (video, stream, peerId, user) => {
-    console.log("called");
+    // console.log("called");
     // console.log(videoGrid);
     // main wrapper
     const videoWrapper = document.createElement("div");
@@ -152,15 +160,23 @@ function processStream(stream) {
         const video = document.createElement("video");
         call.on("stream", (userVideoStream) => {
             
-                
-                    console.log("myPerr called");
-                    addVideoStream(
-                        video,
-                        userVideoStream,
-                        call.peer,
-                        // data.user
-                        null
-                    );
+            fetch(`/user?peer=${call.peer}&room=${ROOM_ID}`)
+            .then((res) => {
+                // console.log(res);
+                return res.json();
+            })
+            .then((data) => {
+                addVideoStream(
+                    video,
+                    userVideoStream,
+                    call.peer,
+                    data.user
+                );
+            }).catch((err) => {
+                console.log(err);
+            }
+            );
+
                 
         });
         call.on("close", () => {
@@ -171,16 +187,85 @@ function processStream(stream) {
     socket.on("user-connected", (userId, fname, audio, video, count) => {
         socket.emit("user-callback");
         connectToNewUser(userId, myVideoStream);
-        // changeCount(count);
+        changeCount(count);
     });
 }
 myPeer.on("open", (id) => {
     Peer_ID = id;
     console.log("peer id is : ", id);
-    socket.emit('join-room', ROOM_ID, id)
+    socket.emit('join-room', 
+    ROOM_ID,
+    Peer_ID,
+    USER_ID,
+    name,
+    myVideoStream.getAudioTracks()[0].enabled,
+    myVideoStream.getVideoTracks()[0].enabled
+    
+    )
 
 });
 
+//share screeen feature
+const shareScreen = () => {
+    // if(e.target.classList.contains("active")) return;
+    if(shareScreenButton.classList.contains("active")) {
+        
+        return;
+    }
+    shareScreenButton.innerHTML = "Stop Sharing Screen";
+
+
+    shareScreenButton.classList.add("active");
+    navigator.mediaDevices
+        .getDisplayMedia({
+            video: true,
+            audio: {
+
+                echoCancellation: true,
+                noiseSuppression: true,
+                sampleRate : 44100,
+            },
+        }).then((stream) => {
+            var videoTrack = stream.getVideoTracks()[0];
+            myVideoTrack = myVideoStream.getVideoTracks()[0];
+            replaceVideoTrack(myVideoStream, videoTrack);
+            for (peer in peers) {
+                let sender = peers[peer].peerConnection
+                    .getSenders()
+                    .find(function (s) {
+                        return s.track.kind == videoTrack.kind;
+                    });
+                sender.replaceTrack(videoTrack);
+            }
+            videoTrack.onended = function () {
+                shareScreenButton.classList.remove("active");
+                  stopPresenting(videoTrack);
+            }
+
+        }).catch((err) => {
+            console.log(err);
+        }
+        );
+    };
+
+
+const stopPresenting = (videoTrack) => {
+    console.log("stopping presenting");
+    // shareScreenButton.classList.remove("active");
+    shareScreenButton.innerHTML = "Share Screen";
+    for (peer in peers) {
+        let sender = peers[peer].peerConnection.getSenders().find(function (s) {
+            return s.track.kind == videoTrack.kind;
+        });
+        sender.replaceTrack(myVideoTrack);
+    }
+    replaceVideoTrack(myVideoStream, myVideoTrack);
+};
+
+const replaceVideoTrack = (stream, videoTrack) => {
+    stream.removeTrack(stream.getVideoTracks()[0]);
+    stream.addTrack(videoTrack);
+};
 let text = $('input');
 
 
@@ -237,8 +322,8 @@ const setMuteButton = () => {
 //stop and start video
 const stopStart = () => {
     const enabled = myVideoTrack.enabled;
-    console.log("button called");
-    console.log(enabled);
+    // console.log("button called");
+    // console.log(enabled);
     if (enabled) {
         myVideoTrack.enabled = false;
         setStartButton();
@@ -268,7 +353,11 @@ const setStartButton = () => {
     document.querySelector(".main__video_button").innerHTML = html;
 }
 
-
+//updating participants number
+const changeCount = (count) => {
+    const counter = document.getElementById("user-number");
+    // counter.innerHTML = count;
+};
 
 
 
