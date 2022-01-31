@@ -16,7 +16,7 @@ require('./db/conn');
 const passport = require('passport');
 const session = require('express-session');
 const flash = require('express-flash');
-
+const index = require('./routes/index.js');
 const initializePassport = require('./passport-config');
 initializePassport(passport, 
   user
@@ -39,7 +39,7 @@ app.set("layout", "layouts/layout");
 
 
 
-// app.use("/", videoRoom); 
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.set('view engine', 'ejs');
 
@@ -66,16 +66,15 @@ app.use('/peerjs', peerServer);
 // app.get('/:room',(req,res) => {
 //     res.render('room', {roomId: req.params.room});
 // })
-app.get('/', (req, res) => {
-    res.render('index.ejs');
-    });
+// app.get('/', (req, res) => {
+//     res.render('index.ejs');
+//     });
 
 // login
 app.use("/login", login);
 
 // signup
 app.use("/register", signup);
-app.use("/new-meeting", newMeeting);
 // console.log(__dirname + '/public');
 app.get("/user", async (req, res) => {
     res.json({
@@ -85,7 +84,20 @@ app.get("/user", async (req, res) => {
 server.listen(process.env.PORT || 8888, () => {
     console.log('Example app listening on port 8888!');
 });
+
+app.use("/new-meeting", newMeeting);
+
 app.use("/", videoRoom); 
+
+app.use("/", index); 
+
+
+
+
+
+
+
+
 io.on('connection', (socket) => {
     socket.on('join-room', 
     async(roomId, peerId, userId, name, audio, video) => {
@@ -132,7 +144,25 @@ io.on('connection', (socket) => {
                     roomData.count + 1
                 );
 
+        socket.on("disconnect", async () => {
+            roomData = await room.findOne({ roomId: roomId }).exec();
+            await room.updateOne(
+                { roomId: roomId },
+                { count: roomData.count - 1 }
+            );
+            // remove peer details
+            await peerUser.deleteOne({ peerId: peerId });
+            socket
+                .to(roomId)
+                .emit(
+                    "user-disconnected",
+                    peerId,
+                    roomData.count - 1
+                );
+        });
+
         socket.on('message', message =>{
+            
             io.to(roomId).emit('createMessage', message);
         })
         }

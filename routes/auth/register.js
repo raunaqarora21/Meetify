@@ -7,11 +7,11 @@ const user = require('../../db/schemas/user');
 
 
 
-route.get('/', (req, res) => {
+route.get('/', checkNotAuthenticated, (req, res) => {
     res.render('auth/signup.ejs');  
 })
 
-route.post('/', (req, res) => {
+route.post('/', checkNotAuthenticated, (req, res) => {
     
 
     user.findOne ({username: req.body.username}, async(err, data) => {

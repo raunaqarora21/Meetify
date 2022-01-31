@@ -38,6 +38,7 @@ navigator.mediaDevices.getUserMedia({
     //         addVideoStream(video, userVideoStream);
     //     })
     // })
+    //
     
     }).catch((err) =>{
         navigator.mediaDevices.getUserMedia(
@@ -58,14 +59,17 @@ navigator.mediaDevices.getUserMedia({
     
 });
 });
+
+//disconneting the user
+socket.on("user-disconnected", (userId, count) => {
+    if (peers[userId]) {
+        peers[userId].close();
+        delete peers[userId];
+        changeCount(count);
+    }
+});
+
     
-
-
-
-
-
-
-
 
 function connectToNewUser(userId, stream) {
     // set others peerid and send my stream
@@ -358,6 +362,121 @@ const changeCount = (count) => {
     const counter = document.getElementById("user-number");
     // counter.innerHTML = count;
 };
+
+
+
+//Screen Recording 
+
+const screenRecordingButton = document.getElementById("screen-record");
+
+const recordingToogle = () => {
+    if(screenRecordingButton.classList.contains("active")) {
+        screenRecordingButton.classList.remove("active");
+        screenRecordingButton.innerHTML = "Start Recording";
+        stopRecording();
+    } else {
+        screenRecordingButton.classList.add("active");
+        screenRecordingButton.innerHTML = "Stop Recording";
+        startRecording();
+    }
+}
+
+var data = [];
+var mediaRecorder;
+const startRecording = () => {
+    console.log("start recording");
+    // var options =  { mimeType: "video/webm;" };
+    mediaRecorder = new MediaRecorder(myVideoStream, {
+        mineType: "video/webm;codecs=H264",
+    });
+    mediaRecorder.start(1000);
+    mediaRecorder.ondataavailable = (e) => {
+        
+
+            data.push(e.data);
+            // console.log(e.data);
+
+        
+        
+    }
+
+    mediaRecorder.onstop = (e) => {
+        console.log("recording stopped");
+        console.log(data);
+        data = [];
+        delete mediaRecorder;
+    }
+}
+
+
+const stopRecording = () => {
+    console.log("stop recording");
+    const blob = new Blob(data, { type: data[0].type });
+    mediaRecorder.stop();
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'test.webm';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+    , 100);
+
+    data = [];
+
+
+   
+}
+
+
+
+
+const showChat = (e) => {
+    // console.log("chat");
+    const messageContainter = document.getElementById("chat_window");
+    
+    if(messageContainter.style.display == "none"){
+        messageContainter.style.display = "flex";
+    } else {
+        messageContainter.style.display = "none";
+    }
+
+    // document.body.classList.toggle("showChat");
+}
+
+
+// const showInvite = () => {
+//     // console.log("invite");
+//     document.body.classList.add("showInvite");
+//     document.getElementById("roomLink").value = window.location.href;
+// }
+
+// const hideInvitePopUp = () => {
+//     document.body.classList.remove("showInvite");
+// }
+
+
+
+const copyToClip = () => {
+    // var inviteLink = window.location.href + "?room=" + ROOM_ID;
+    document.getElementById("roomLink").value = window.location.href;
+    var inviteLinkInput = document.getElementById("roomLink");
+
+    // inviteLinkInput.value = inviteLink;
+    inviteLinkInput.select();
+    // document.execCommand("copy");
+    navigator.clipboard.writeText(inviteLinkInput.value);
+    console.log(inviteLinkInput.value);
+    alert("Invite link copied to clipboard");
+    // hideInvitePopUp();
+}
+
+
 
 
 

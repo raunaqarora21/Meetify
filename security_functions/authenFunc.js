@@ -1,10 +1,11 @@
 function checkAuthenticated(req, res,next){
-    // console.log("Check Authenticated");
     if(req.isAuthenticated()){
+        // console.log("Check Authenticated");
+
         return next();
     }
     // console.log("not authenticated");
-    res.redirect('/login');
+    return res.redirect('/login');
 }
 
 function checkNotAuthenticated(req, res,next){

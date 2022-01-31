@@ -17,5 +17,3 @@ route.get("/:room", checkAuthenticated, async (req, res) => {
 });
 
 module.exports = route;
-
-module.exports = route;

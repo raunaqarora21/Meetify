@@ -21,6 +21,11 @@
 
 </head>
 <body>
+
+    <div style="display:none">
+        <input type="text" name="" id="roomLink" readonly>
+    </div>
+
     
     <div class="main">
         <div class="main__left">
@@ -52,17 +57,25 @@
                     
                 </div>
                 <div class="main__controls__block">
-                    <div class="main__controls__button">
+                    <!-- <div class="main__controls__button">
                         <i class="fas fa-shield-alt"></i>
 
                         <span>Security</span>
+                    </div> -->
+
+                    <div class="main__controls__button" id= "screen-record" onclick="recordingToogle()">
+                        <i class="fas fa-shield-alt"></i>
+
+                        <span>Start Recording</span>
                     </div>
-                    <div class="main__controls__button">
+
+
+                    <div class="main__controls__button" onclick="copyToClip()">
                         <i class="fas fa-user-friends"></i>
 
-                        <span>Participants</span>
+                        <span>Invite People</span>
                     </div>
-                    <div class="main__controls__button">
+                    <div class="main__controls__button" onclick="showChat(this)">
                         <i class="fas fa-comment-alt"></i>
 
                         <span>Chat</span>
@@ -80,7 +93,7 @@
 
             </div>
         </div>
-        <div class="main__right">
+        <div class="main__right" id="chat_window">
            <div class="main__header">
                <h6>Chat</h6>
            </div>
