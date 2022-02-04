@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(require("express-ejs-layouts"));
 app.set("layout", "layouts/layout");
 
-
+const cookie = require("cookie-session");
 
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -53,10 +53,13 @@ app.get('/auth', (req,res) => {
 
 
 
+// app.use(cookie({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: ["raunaq"] }));
 
 
 const signup = require("./routes/auth/register");
 const login = require("./routes/auth/login");
+const logout = require("./routes/auth/logout");
+
 const newMeeting = require("./routes/newMeeting");
 const peerUser = require('./db/schemas/peerUser.js');
 const room = require("./db/schemas/room.js");
@@ -69,6 +72,10 @@ app.use('/peerjs', peerServer);
 // app.get('/', (req, res) => {
 //     res.render('index.ejs');
 //     });
+
+
+//logout page
+app.use("/logout", logout);
 
 // login
 app.use("/login", login);
@@ -90,8 +97,6 @@ app.use("/new-meeting", newMeeting);
 app.use("/", videoRoom); 
 
 app.use("/", index); 
-
-
 
 
 
@@ -165,6 +170,9 @@ io.on('connection', (socket) => {
             
             io.to(roomId).emit('createMessage', message);
         })
+        socket.on("client-send", (data) => {
+            socket.to(roomId).emit("client-podcast", data, name);
+        });
         }
         catch(err){
             console.log(err);

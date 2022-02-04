@@ -216,7 +216,7 @@ const shareScreen = () => {
         
         return;
     }
-    shareScreenButton.innerHTML = "Stop Sharing Screen";
+    shareScreenButton.innerText = "Stop Sharing Screen";
 
 
     shareScreenButton.classList.add("active");
@@ -256,7 +256,7 @@ const shareScreen = () => {
 const stopPresenting = (videoTrack) => {
     console.log("stopping presenting");
     // shareScreenButton.classList.remove("active");
-    shareScreenButton.innerHTML = "Share Screen";
+    shareScreenButton.innerHTML = '<i class="fas fa-play"></i> <span>Share Screen</span>';
     for (peer in peers) {
         let sender = peers[peer].peerConnection.getSenders().find(function (s) {
             return s.track.kind == videoTrack.kind;
@@ -271,23 +271,67 @@ const replaceVideoTrack = (stream, videoTrack) => {
     stream.addTrack(videoTrack);
 };
 let text = $('input');
+// console.log("Input" + text);
 
+// $('html').keydown((e) => {
+//     console.log("Called" + text.val().length);
 
-$('html').keydown((e) => {
-    if (e.which == 13 && text.val().length !== 0) {
-        // console.log(text.val());
-        socket.emit('message', text.val());
-        text.val('');
-    }
+//     if (e.which == 13 && text.val().length !== 0) {
+//         console.log(text.val());
+//         socket.emit('message', text.val());
+//         text.val('');
+//     }
    
 
+// });
+
+// socket.on('createMessage',message =>{
+//     console.log("Server",message);
+//     $('ul').append(`<li class="message"><b>user</b><br/>${message}</li>`);
+//     $('ul').scrollTop($('ul').prop('scrollHeight'));
+// })
+
+
+const addMessage = (sender, userName, message) => {
+    const messageBoxButton = document.getElementById("message-box");
+    // const chatPanel = document.getElementById("chat-panel");
+    // if (
+    //     !chatPanel.classList.contains("display-chat-panel") &&
+    //     !messageBoxButton.classList.contains("dot")
+    // )
+        // messageBoxButton.classList.add("dot");
+    const time = new Date();
+    const chatBox = document.querySelector(".chat-box");
+    const chat = document.createElement("div");
+    chat.classList.add("chat");
+    chat.classList.add(sender);
+    chat.innerHTML = `<p class="name">${userName} <span class="time"> ${time.toLocaleString(
+        "en-US",
+        { hour: "numeric", minute: "numeric", hour12: true }
+    )} </span> </p><p class="message">${message}</p>`;
+    $('ul').append(chat);
+    $('ul').scrollTop($('ul').prop('scrollHeight'));
+
+};
+const chatForm = document.querySelector(".chat-input-wrapper");
+chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const chatInput = document.getElementById("chat-input");
+    if (chatInput.value == "") return;
+    socket.emit("client-send", chatInput.value);
+    addMessage("me", name, chatInput.value);
+    // scrollDown(".chat-box");
+    chatInput.value = "";
+});
+//Scroll Down in Chatbox
+socket.on("client-podcast", (data, userName) => {
+    console.log(userName + ": " + data);
+    addMessage("user", userName, data);
+    scrollDown(".chat-box");
 });
 
-socket.on('createMessage',message =>{
-    console.log("Server",message);
-    $('ul').append(`<li class="message"><b>user</b><br/>${message}</li>`);
-    $('ul').scrollTop($('ul').prop('scrollHeight'));
-})
+
+
 
 //Mute our audio
 const muteUnmute = () => {
@@ -372,7 +416,7 @@ const screenRecordingButton = document.getElementById("screen-record");
 const recordingToogle = () => {
     if(screenRecordingButton.classList.contains("active")) {
         screenRecordingButton.classList.remove("active");
-        screenRecordingButton.innerHTML = "Start Recording";
+        screenRecordingButton.innerHTML = '<i class="fas fa-record-vinyl"></i> <span>Start Recording</span>';
         stopRecording();
     } else {
         screenRecordingButton.classList.add("active");
