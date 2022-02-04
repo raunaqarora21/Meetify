@@ -12,7 +12,9 @@ const peerServer = ExpressPeerServer(server, {
 const user = require("./db/schemas/user.js");
 const bodyParser = require('body-parser');
 const videoRoom = require("./routes/video.js");
-require('./db/conn');
+// require('./db/conn');
+const mongoose = require("mongoose");
+
 const passport = require('passport');
 const session = require('express-session');
 const flash = require('express-flash');
@@ -98,6 +100,18 @@ app.use("/", videoRoom);
 
 app.use("/", index); 
 
+mongoose.connect('mongodb+srv://raunaq21:k91nszOUBFnre4rq@cluster0.fjxyt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // useFindAndModify: false,
+}).then(() => {
+  
+    console.log('Connected to Database');
+}
+).catch((err) => {
+    console.log('Connection Failed', err);
+}
+);
 
 
 
