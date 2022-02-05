@@ -100,7 +100,7 @@ app.use("/", videoRoom);
 
 app.use("/", index); 
 
-mongoose.connect('mongodb+srv://raunaq21:k91nszOUBFnre4rq@cluster0.fjxyt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/meetify', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     // useFindAndModify: false,
