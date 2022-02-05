@@ -3,7 +3,20 @@ const express = require('express');
 const app = express();
 const {v4: uuidv4} = require('uuid');
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const cors = require('cors');
+const io = require('socket.io')(server, 
+    {
+        cors:{
+            origin: '*',
+            methods: 'GET, POST',
+
+        }
+    }
+);    
+
+app.use(cors());
+    
+
 const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
     debug: true,
@@ -151,6 +164,7 @@ io.on('connection', (socket) => {
           
            
             socket.join(roomId);
+            console.log(roomId);
         
             socket
                 .to(roomId)

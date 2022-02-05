@@ -150,6 +150,31 @@ const addVideoStream = (video, stream, peerId, user) => {
 
 }
 
+const meetingToggleBtn = document.getElementById("meeting-toggle");
+meetingToggleBtn.addEventListener("click", (e) => {
+    const currentElement = e.target;
+    const counter = document.getElementById("user-number");
+    // const count = Number(counter.innerText) + 1;
+    if (currentElement.classList.contains("call-button")) {
+        // changeCount(count);
+        currentElement.classList.remove("call-button");
+        currentElement.classList.add("call-end-button");
+        currentElement.classList.add("tooltip-danger");
+        currentElement.innerHTML = '<i class="fas fa-phone-slash"></i> <span>End Call</span>';
+        currentElement.setAttribute("tool_tip", "Leave the Meeting");
+        socket.emit(
+            "join-room",
+            ROOM_ID,
+            Peer_ID,
+            USER_ID,
+            name,
+            myVideoStream.getAudioTracks()[0].enabled,
+            myVideoStream.getVideoTracks()[0].enabled
+        );
+    } 
+    else location.replace(`/`);
+});
+
 
 function processStream(stream) {
     addVideoStream(myVideo, myVideoStream, null, {
@@ -197,15 +222,15 @@ function processStream(stream) {
 myPeer.on("open", (id) => {
     Peer_ID = id;
     console.log("peer id is : ", id);
-    socket.emit('join-room', 
-    ROOM_ID,
-    Peer_ID,
-    USER_ID,
-    name,
-    myVideoStream.getAudioTracks()[0].enabled,
-    myVideoStream.getVideoTracks()[0].enabled
+    // socket.emit('join-room', 
+    //     ROOM_ID,
+    //     Peer_ID,
+    //     USER_ID,
+    //     name,
+    //     myVideoStream.getAudioTracks()[0].enabled,
+    //     myVideoStream.getVideoTracks()[0].enabled
     
-    )
+    // )
 
 });
 
@@ -327,7 +352,7 @@ chatForm.addEventListener("submit", (e) => {
 socket.on("client-podcast", (data, userName) => {
     console.log(userName + ": " + data);
     addMessage("user", userName, data);
-    scrollDown(".chat-box");
+    // scrollDown(".chat-box");
 });
 
 

@@ -47,13 +47,20 @@
                         <span>Stop Video</span>
 
                     </div>
-
-                    <div onclick="shareScreen()" id = "share-screen" class="main__controls__button">
-                        <i class="fas fa-play"></i>
-
-                        <span>Share Screen</span>
-
+                  
+                    <div id="meeting-toggle" class="main__controls__button main__video_button call-button" >
+                        <!-- <button id="meeting-toggle" class="footer-elements call-button tooltip" tool_tip="Join the Meeting"> -->
+                            <!-- <ion-icon name="call-outline"></ion-icon> -->
+                            <i class="fas fa-phone-alt"></i>
+                            <span>Join Meeting</span>
+    
+    
+    
+                        <!-- </button> -->
                     </div>
+                    
+
+                
                     
                 </div>
                 <div class="main__controls__block">
@@ -62,6 +69,12 @@
 
                         <span>Security</span>
                     </div> -->
+                        <div onclick="shareScreen()" id = "share-screen" class="main__controls__button">
+                        <i class="fas fa-play"></i>
+
+                        <span>Share Screen</span>
+
+                    </div>
 
                     <div class="main__controls__button" id= "screen-record" onclick="recordingToogle()">
                         <i class="fas fa-record-vinyl"></i>
@@ -82,14 +95,14 @@
                     </div>
 
                 </div>
-                <div class="main__controls__block">
+                <!-- <div class="main__controls__block">
                   
                     <div class="main__controls__button">
-                        <!-- <i class="fas fa-sign-out-alt"></i> -->
+                        <i class="fas fa-sign-out-alt"></i> -->
 
-                        <span class="leave_meeting">Leave Meeting</span>
+                        <!-- <span class="leave_meeting">Leave Meeting</span>
                     </div>
-                </div>
+                </div> -->
 
             </div>
         </div>
