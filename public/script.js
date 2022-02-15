@@ -2,7 +2,7 @@ const myVideo = document.createElement('video');
 const videoGrid = document.getElementById('video-grid');
 const socket = io('/');
 const shareScreenButton = document.getElementById("share-screen");
-
+var audio = new Audio('chat_sound.mp3');
 
 var myPeer = new Peer()
 var Peer_ID;
@@ -99,21 +99,47 @@ function connectToNewUser(userId, stream) {
 
 
 const addVideoStream = (video, stream, peerId, user) => {
-    // console.log("called");
-    // console.log(videoGrid);
+    const micBtn = document.createElement("button");
+    micBtn.classList.add("video-element");
+    micBtn.classList.add("mic-button");
+    micBtn.innerHTML = `<ion-icon name="mic-off-outline"></ion-icon>`;
+    micBtn.classList.add("mic-off");
+
+    // create audio FX
+    // const audioFX = new SE(stream);
+    // const audioFXElement = audioFX.createElement();
+    // audioFXElement.classList.add("mic-button");
+
+    // if (user.audio) micBtn.classList.add("off");
+    // else audioFXElement.classList.add("off");
+
+    // video off element
+    const videoOffIndicator = document.createElement("div");
+    videoOffIndicator.classList.add("video-off-indicator");
+    videoOffIndicator.innerHTML = `<ion-icon name="videocam-outline"></ion-icon>`;
+
+    // create pin button
+    const pinBtn = document.createElement("button");
+    pinBtn.classList.add("video-element");
+    pinBtn.classList.add("pin-button");
+    pinBtn.innerHTML = `<ion-icon name="expand-outline"></ion-icon>`;
     // main wrapper
     const videoWrapper = document.createElement("div");
     videoWrapper.id = "video-wrapper";
     videoWrapper.classList.add("video-wrapper");
 
-    // const namePara = document.createElement("p");
-    // namePara.innerHTML = user.name;
-    // namePara.classList.add("video-element");
-    // namePara.classList.add("name");
+    const namePara = document.createElement("p");
+    namePara.innerHTML = user.name;
+    namePara.classList.add("video-element");
+    namePara.classList.add("name");
 
-    // const elementsWrapper = document.createElement("div");
-    // elementsWrapper.classList.add("elements-wrapper");
-    // elementsWrapper.appendChild(namePara);
+    const elementsWrapper = document.createElement("div");
+    elementsWrapper.classList.add("elements-wrapper");
+    elementsWrapper.appendChild(namePara);
+    elementsWrapper.appendChild(pinBtn);
+    elementsWrapper.appendChild(micBtn);
+    // elementsWrapper.appendChild(audioFXElement);
+    elementsWrapper.appendChild(videoOffIndicator);
 
 
     video.srcObject = stream;
@@ -132,6 +158,7 @@ const addVideoStream = (video, stream, peerId, user) => {
   
 
     // videoWrapper.appendChild(elementsWrapper);
+    // videoWrapper.appendChild(namePara);
     videoWrapper.appendChild(video);
 
      videoGrid.append(videoWrapper);
@@ -151,8 +178,9 @@ const addVideoStream = (video, stream, peerId, user) => {
 }
 
 const meetingToggleBtn = document.getElementById("meeting-toggle");
-meetingToggleBtn.addEventListener("click", (e) => {
-    const currentElement = e.target;
+
+const meetingToggle = () => {
+    const currentElement = meetingToggleBtn;
     const counter = document.getElementById("user-number");
     // const count = Number(counter.innerText) + 1;
     if (currentElement.classList.contains("call-button")) {
@@ -173,7 +201,8 @@ meetingToggleBtn.addEventListener("click", (e) => {
         );
     } 
     else location.replace(`/`);
-});
+
+}
 
 
 function processStream(stream) {
@@ -236,9 +265,13 @@ myPeer.on("open", (id) => {
 
 //share screeen feature
 const shareScreen = () => {
+    var videoTrack; 
+    
+
     // if(e.target.classList.contains("active")) return;
     if(shareScreenButton.classList.contains("active")) {
-        
+        shareScreenButton.classList.remove("active");
+        stopPresenting(videoTrack);
         return;
     }
     shareScreenButton.innerText = "Stop Sharing Screen";
@@ -255,7 +288,7 @@ const shareScreen = () => {
                 sampleRate : 44100,
             },
         }).then((stream) => {
-            var videoTrack = stream.getVideoTracks()[0];
+            videoTrack = stream.getVideoTracks()[0];
             myVideoTrack = myVideoStream.getVideoTracks()[0];
             replaceVideoTrack(myVideoStream, videoTrack);
             for (peer in peers) {
@@ -334,9 +367,19 @@ const addMessage = (sender, userName, message) => {
         "en-US",
         { hour: "numeric", minute: "numeric", hour12: true }
     )} </span> </p><p class="message">${message}</p>`;
-    $('ul').append(chat);
-    $('ul').scrollTop($('ul').prop('scrollHeight'));
+    // console.log(chat);
+    if(sender != "me") 
+    {
+        audio.play();
+    }
+    chatBox.append(chat);
+    // chatBox.scrollTop(chatBox.prop('scrollHeight'));
 
+};
+
+const scrollDown = (query) => {
+    var objDiv = document.querySelector(query);
+    objDiv.scrollTop = objDiv.scrollHeight;
 };
 const chatForm = document.querySelector(".chat-input-wrapper");
 chatForm.addEventListener("submit", (e) => {
@@ -345,14 +388,14 @@ chatForm.addEventListener("submit", (e) => {
     if (chatInput.value == "") return;
     socket.emit("client-send", chatInput.value);
     addMessage("me", name, chatInput.value);
-    // scrollDown(".chat-box");
+    scrollDown(".chat-box");
     chatInput.value = "";
 });
 //Scroll Down in Chatbox
 socket.on("client-podcast", (data, userName) => {
     console.log(userName + ": " + data);
     addMessage("user", userName, data);
-    // scrollDown(".chat-box");
+    scrollDown(".chat-box");
 });
 
 
@@ -438,7 +481,7 @@ const changeCount = (count) => {
 
 const screenRecordingButton = document.getElementById("screen-record");
 
-const recordingToogle = () => {
+const recordingToogle = async() => {
     if(screenRecordingButton.classList.contains("active")) {
         screenRecordingButton.classList.remove("active");
         screenRecordingButton.innerHTML = '<i class="fas fa-record-vinyl"></i> <span>Start Recording</span>';
@@ -446,16 +489,22 @@ const recordingToogle = () => {
     } else {
         screenRecordingButton.classList.add("active");
         screenRecordingButton.innerHTML = "Stop Recording";
-        startRecording();
+        let stream = await recordScreen();
+        startRecording(stream);
     }
 }
-
+async function recordScreen() {
+    return await navigator.mediaDevices.getDisplayMedia({
+        audio: true, 
+        video: { mediaSource: "screen"}
+    });
+}
 var data = [];
 var mediaRecorder;
-const startRecording = () => {
+const startRecording = (stream) => {
     console.log("start recording");
     // var options =  { mimeType: "video/webm;" };
-    mediaRecorder = new MediaRecorder(myVideoStream, {
+    mediaRecorder = new MediaRecorder(stream, {
         mineType: "video/webm;codecs=H264",
     });
     mediaRecorder.start(1000);
@@ -471,7 +520,7 @@ const startRecording = () => {
 
     mediaRecorder.onstop = (e) => {
         console.log("recording stopped");
-        console.log(data);
+        // console.log(data);
         data = [];
         delete mediaRecorder;
     }
@@ -487,7 +536,7 @@ const stopRecording = () => {
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
-    a.download = 'test.webm';
+    a.download = 'recording.webm';
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
@@ -502,17 +551,20 @@ const stopRecording = () => {
    
 }
 
-
+const chatCloseButton = document.getElementById('chat-close-button')
+chatCloseButton.addEventListener('click', e => {
+    messageContainter.style.display = "none";
+})  
+const messageContainter = document.getElementById("chat_window");
 
 
 const showChat = (e) => {
-    // console.log("chat");
-    const messageContainter = document.getElementById("chat_window");
+    console.log("Clicked chat");
     
-    if(messageContainter.style.display == "none"){
-        messageContainter.style.display = "flex";
-    } else {
+    if(messageContainter.style.display == "flex"){
         messageContainter.style.display = "none";
+    } else {
+        messageContainter.style.display = "flex";
     }
 
     // document.body.classList.toggle("showChat");

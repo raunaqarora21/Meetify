@@ -29,7 +29,7 @@
     
     <div class="main">
         <div class="main__left">
-            <div class="main__videos">
+            <div class="main__videos main-wrapper">
                 <div id="video-grid">
 
                 </div>
@@ -48,7 +48,7 @@
 
                     </div>
                   
-                    <div id="meeting-toggle" class="main__controls__button main__video_button call-button" >
+                    <div onclick="meetingToggle()"  id="meeting-toggle" class="main__controls__button main__video_button call-button" >
                         <!-- <button id="meeting-toggle" class="footer-elements call-button tooltip" tool_tip="Join the Meeting"> -->
                             <!-- <ion-icon name="call-outline"></ion-icon> -->
                             <i class="fas fa-phone-alt"></i>
@@ -106,38 +106,39 @@
 
             </div>
         </div>
-        <div class="main__right" id="chat_window">
-           <div class="main__header">
-               <h6>Chat</h6>
-           </div>
-           <div class="main__chat_window">
-               <ul class="messages">
-
-               </ul>
+        <div class="main__right chat-box-wrapper" id="chat_window">
+            <div class="chat-box-header">
+                <div class="chat-box-headline">
+                  <ion-icon name="chatbox-outline"></ion-icon>
+                  <span>Chat</span>
+                </div>
+                <button id="chat-close-button" class="cross-button">
+                  <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+           <div class="main__chat_window chat-box">
+            
            </div>
            <!-- <div class="main__message_containter">
                 <input type="text" class="main__message_input" id = "chat_message" placeholder="Type a message...">
            </div> -->
            <div class="chat-box-control">
-            <form class="chat-input-wrapper">
-              <div class="input-box-wrapper" chat-id="asdf">
-                <input type="text" class="chat-input" id="chat-input" placeholder="Send Message">
-              </div>
-              <button type="submit" class="chat-input-button">
-                <ion-icon name="send-outline"></ion-icon>
-              </button>
-            </form>
+                <form class="chat-input-wrapper">
+                <div class="input-box-wrapper" chat-id="asdf">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Send Message">
+                </div>
+                <button type="submit" class="chat-input-button">
+                    <ion-icon name="send-outline"></ion-icon>
+                </button>
+                </form>
             
-            <style>
-              .dialogue-container{
-                width: max-content;
-                background-color: #d9d5dae8;
-              }
+                <style>
+             
+        
+                
+                </style>
       
-              
-            </style>
-      
-          </div>
+            </div>
         </div>
     </div>
     

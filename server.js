@@ -135,7 +135,7 @@ io.on('connection', (socket) => {
     async(roomId, peerId, userId, name, audio, video) => {
         // console.log(roomId, peerId, userId, name, audio, video);
         try{
-            console.log("join room called");
+            // console.log("join room called");
             await peerUser({
                 peerId: peerId,
                 name: name,
@@ -164,7 +164,7 @@ io.on('connection', (socket) => {
           
            
             socket.join(roomId);
-            console.log(roomId);
+            // console.log(roomId);
         
             socket
                 .to(roomId)

@@ -1,19 +1,124 @@
+:root {
+    --color1: 27, 33, 39;
+    --color2: 22, 28, 33;
+    --color3: 71, 69, 206;
+    --color4: 37, 42, 48;
+    --color5: 4, 231, 98;
+    --color6: 255, 47, 25;
+    --footer-height: 80px;
+    --size: 75px;
+    --clr1: #2e2cb4;
+    --clr2: #4745ce;
+    --clr3: #6264a7;
+    --clr4: #8786df;
+  } 
+  * {
+    padding: 0;
+    margin: 0;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+  }
+
 body{
     margin: 0;
     padding: 0;
 }
 
-#video-grid{
+/* #video-grid{
     display: grid;
-    /* grid-template-columns: repeat(auto-fill, 300px);
-    grid-auto-rows: 300px; */
+    grid-template-columns: repeat(auto-fill, 300px);
+    grid-auto-rows: 300px;
     justify-content: center;
+} */
+
+.main-wrapper {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - var(--footer-height));
+    overflow-y: auto;
 }
-video{
-    width: 400px;
-    height: 300px;
-    object-fit: cover;
-}
+
+#video-grid{
+    display: flex;
+    align-items: stretch; 
+    justify-content: space-between;
+    width: 100%;
+    /* background: #cacaca; */
+    margin: 0;
+    padding: 0;
+  } */
+
+  video{
+    text-align: center;
+    
+    display: block;
+    flex: 0 1 auto; 
+    list-style-type: none;
+    /* background: #fafafa;  */
+    margin: auto;
+    width: 100%;
+
+  }
+
+/* #video-grid {
+    display: -ms-grid; 
+    display: grid;
+    -ms-grid-columns: (minmax(400px, 1fr))[auto-fill];
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-auto-rows: 300px;
+    position: relative;
+    -webkit-transition: all 0.24s linear;
+    transition: all 0.24s linear;
+    grid-gap: 0.85rem;
+  }
+  
+  #video-grid .video-wrapper {
+    position: relative;
+    -webkit-transition: all 0.24s linear;
+    transition: all 0.24s linear;
+    border-radius: 0.25rem;
+    overflow: hidden; 
+  } */
+  
+  /* #video-grid .video-wrapper .elements-wrapper {
+    z-index: 1;
+    position: relative;
+    top: 0;
+    left: 0;
+    bottom: 50px;
+    width: 100%;
+    height: 100%;
+    -webkit-transition: all 0.24s linear;
+    transition: all 0.24s linear;
+  } 
+
+  #video-grid .video-wrapper .elements-wrapper .video-element {
+    outline: none;
+    border: none;
+    z-index: 1;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 6px;
+    background-color: rgba(var(--color1), 0.8);
+    margin: 0.5rem;
+    color: white;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    -webkit-transition: all 0.24s linear;
+    transition: all 0.24s linear;
+  }
+
+  */
+
+  
+
+  .mirror {
+    -webkit-transform: scale(-1, 1);
+            transform: scale(-1, 1);
+  }
+
 
 .main{
     height: 100vh;
@@ -88,19 +193,100 @@ video{
 .main__chat_window{
     flex-grow: 1;
     overflow-y: scroll;
+     
 
 }
+
+.chat-box {
+    width: 100%;
+    height: calc(100% - 100px);
+    overflow-y: auto;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    padding: 0rem 1rem;
+    border-top: 1px solid rgba(var(--color4), 1);
+    border-bottom: 1px solid rgba(var(--color4), 1);
+    padding-bottom: 1rem;
+  }
 
 .main__message_container{
-    padding: 22px 12px;
+    /* padding: 22px 12px; */
     display: flex;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    /* display: flex; */
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
 }
 
 
-.messages{
-    color: #fff;
-    list-style: none;
-}
+ .chat .message{
+    display: inline-block;
+
+    color: white;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    border-radius: 0.85rem;
+  }
+
+ 
+
+  .chat .name {
+   
+    font-size: 0.75rem;
+  }
+
+  .chat p {
+    margin: 0;
+    padding: 0;
+    color: white;
+  }
+
+
+  .chat.me .name {
+    display: none;
+  }
+  .user {
+    padding-right: 2rem;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+  }
+  .user .message {
+    border-top-left-radius: 0px;
+    /* background-color: #3d5a80; */
+    border: 1px solid rgba(var(--color3), 1);
+    color: white;
+    float: left;
+    margin-left: 0.5rem;
+    clear: both;
+  }
+
+  
+
+  .me {
+    padding-left: 2rem;
+    justify-content: flex-end;
+    -webkit-box-align: end;
+    align-items: flex-end;
+   
+          
+  }
+  
+  .me .message {
+    border-top-right-radius: 0px;
+    background-color: rgba(var(--color3), 1);
+    color: white;
+    float: right;
+    clear: both;
+  }
 
 
 .unmute, .stop{
@@ -108,5 +294,172 @@ video{
 }
 
 
+.input-box-wrapper {
+    width: 100%;
+    /* border-bottom: 2px solid rgba(var(--color3), 1); */
+
+}
+
+.chat-box-wrapper .chat-box > :first-child {
+    margin-top: auto;
+  }
+  
+  .chat-box-wrapper .chat-box-control {
+    padding: 0rem 1rem;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    width: 100%;
+    height: 50px;
+  }
+
+  .chat-box-wrapper .chat-box-control ion-icon {
+    color: white;
+  }
+  
+  .chat-box-wrapper form {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+  }
+  
+  .chat-box-wrapper .chat-box-control form,
+  .chat-box-wrapper .input-box-wrapper {
+    width: 100%;
+  }
+  
+  .chat-box-wrapper .input-box-wrapper {
+    border-bottom: 2px solid rgba(var(--color3), 1);
+  }
+  
+  .chat-box-wrapper input {
+    width: 100%;
+    border: none;
+    border-radius: none;
+    outline: none;
+    resize: none;
+    padding: 0.5rem;
+    background-color: rgba(var(--color1), 1);
+    color: white;
+  }
+  
+  .chat-box-wrapper .chat-input-button {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    width: 45px;
+    height: 45px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+
+    .chat-box-wrapper .chat-input-button:hover {
+        background-color: rgba(var(--color3), 1);
+    }
+
+    .chat-box-wrapper .chat-input-button:active {
+        background-color: rgba(var(--color3), 1);
+    }
+
+    .chat-box-wrapper .chat-input-button:focus {
+        background-color: rgba(var(--color3), 1);
+    }
+
+    #chat_window{
+        display: none;
+    }
+
+  
 
 
+
+  
+
+  .chat-box-wrapper .chat-box-header {
+    padding: 0rem 1rem;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    height: 50px;
+  }
+  
+  .chat-box-wrapper .chat-box-header .chat-box-headline {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    color: white;
+  }
+  
+  .chat-box-wrapper .chat-box-header .chat-box-headline ion-icon {
+    font-size: 2rem;
+    margin-right: 0.5rem;
+    color: white;
+  }
+  
+  .chat-box-wrapper .chat-box-header ion-icon[name="close-outline"] {
+    font-size: 2rem;
+    color: grey;
+  }
+
+
+  ion-icon[name="close-outline"] {
+    font-size: 2rem;
+    color: white;
+}
+
+
+
+@media (max-width: 815px) {
+    #video-grid {
+      -ms-grid-columns: (minmax(250px, 1fr))[auto-fill];
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-auto-rows: 300px;
+    }
+  }
+  
+  @media (max-width: 550px) {
+    #video-grid {
+      -ms-grid-columns: (minmax(250px, 1fr))[auto-fill];
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-auto-rows: 300px;
+    }
+}
+
+#video-grid .video-wrapper video {
+    width: 100%;
+    height: 100%;
+    -o-object-fit: cover;
+       object-fit: cover;
+    -webkit-transition: all 0.24s linear;
+    transition: all 0.24s linear;
+  }
