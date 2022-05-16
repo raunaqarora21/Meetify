@@ -15,16 +15,16 @@
     "express-flash": "0.0.2",
     "express-session": "^1.17.2",
     "mongoose": "^6.1.4",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.16",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0",
     "peer": "^0.6.1",
     "socket.io": "^4.4.0",
     "uuid": "^8.3.2"
   },
-  "devDependencies": {},
   "scripts": {
-    "server": "nodemon server.js"
+ 
+    "serve": "nodemon server.js"
   },
   "author": "",
   "license": "ISC"

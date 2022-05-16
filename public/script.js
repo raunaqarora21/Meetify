@@ -6,9 +6,10 @@ var audio = new Audio('chat_sound.mp3');
 
 var myPeer = new Peer()
 var Peer_ID;
-
+let video;
 var myVideoStream;
 var myVideoTrack;
+var videoTrack;
 const peers = {};
 // myVideo.muted = true;
 
@@ -74,7 +75,7 @@ socket.on("user-disconnected", (userId, count) => {
 function connectToNewUser(userId, stream) {
     // set others peerid and send my stream
     const call = myPeer.call(userId, stream);
-    const video = document.createElement("video");
+    video = document.createElement("video");
     call.on("stream", (userVideoStream) => {
         fetch(`/user?peer=${call.peer}&room=${ROOM_ID}`)
         .then((res) => {
@@ -147,7 +148,7 @@ const addVideoStream = (video, stream, peerId, user) => {
     // video.setAttribute("name", user.name);
 
     if (peerId == null) {
-        video.classList.add("mirror");
+        // video.classList.add("mirror");
         // localAudioFXElement = audioFX;
     }
 
@@ -265,18 +266,22 @@ myPeer.on("open", (id) => {
 
 //share screeen feature
 const shareScreen = () => {
-    var videoTrack; 
     
-
+    
+    
     // if(e.target.classList.contains("active")) return;
+    // video.classList.add("mirror");
     if(shareScreenButton.classList.contains("active")) {
         shareScreenButton.classList.remove("active");
+        console.log("share screen off" + videoTrack);
+        videoTrack.stop();
         stopPresenting(videoTrack);
+       
         return;
     }
     shareScreenButton.innerText = "Stop Sharing Screen";
 
-
+    
     shareScreenButton.classList.add("active");
     navigator.mediaDevices
         .getDisplayMedia({
@@ -289,7 +294,10 @@ const shareScreen = () => {
             },
         }).then((stream) => {
             videoTrack = stream.getVideoTracks()[0];
+            console.log("video track is : ", videoTrack);
             myVideoTrack = myVideoStream.getVideoTracks()[0];
+            
+            
             replaceVideoTrack(myVideoStream, videoTrack);
             for (peer in peers) {
                 let sender = peers[peer].peerConnection
@@ -299,9 +307,11 @@ const shareScreen = () => {
                     });
                 sender.replaceTrack(videoTrack);
             }
+            
             videoTrack.onended = function () {
                 shareScreenButton.classList.remove("active");
-                  stopPresenting(videoTrack);
+
+                stopPresenting(videoTrack);
             }
 
         }).catch((err) => {
@@ -313,6 +323,7 @@ const shareScreen = () => {
 
 const stopPresenting = (videoTrack) => {
     console.log("stopping presenting");
+    // videoTrack.stop();
     // shareScreenButton.classList.remove("active");
     shareScreenButton.innerHTML = '<i class="fas fa-play"></i> <span>Share Screen</span>';
     for (peer in peers) {
@@ -329,35 +340,13 @@ const replaceVideoTrack = (stream, videoTrack) => {
     stream.addTrack(videoTrack);
 };
 let text = $('input');
-// console.log("Input" + text);
 
-// $('html').keydown((e) => {
-//     console.log("Called" + text.val().length);
 
-//     if (e.which == 13 && text.val().length !== 0) {
-//         console.log(text.val());
-//         socket.emit('message', text.val());
-//         text.val('');
-//     }
-   
-
-// });
-
-// socket.on('createMessage',message =>{
-//     console.log("Server",message);
-//     $('ul').append(`<li class="message"><b>user</b><br/>${message}</li>`);
-//     $('ul').scrollTop($('ul').prop('scrollHeight'));
-// })
 
 
 const addMessage = (sender, userName, message) => {
     const messageBoxButton = document.getElementById("message-box");
-    // const chatPanel = document.getElementById("chat-panel");
-    // if (
-    //     !chatPanel.classList.contains("display-chat-panel") &&
-    //     !messageBoxButton.classList.contains("dot")
-    // )
-        // messageBoxButton.classList.add("dot");
+    
     const time = new Date();
     const chatBox = document.querySelector(".chat-box");
     const chat = document.createElement("div");
@@ -475,8 +464,8 @@ const changeCount = (count) => {
     // counter.innerHTML = count;
 };
 
-
-
+var stream; //Recorded Stream
+var shouldStop;
 //Screen Recording 
 
 const screenRecordingButton = document.getElementById("screen-record");
@@ -485,19 +474,50 @@ const recordingToogle = async() => {
     if(screenRecordingButton.classList.contains("active")) {
         screenRecordingButton.classList.remove("active");
         screenRecordingButton.innerHTML = '<i class="fas fa-record-vinyl"></i> <span>Start Recording</span>';
-        stopRecording();
+        shouldStop = true;
+        // stopRecording();
     } else {
         screenRecordingButton.classList.add("active");
         screenRecordingButton.innerHTML = "Stop Recording";
-        let stream = await recordScreen();
-        startRecording(stream);
+        // stream = await recordScreen();
+        await recordScreen();
+        // startRecording(stream);
     }
 }
 async function recordScreen() {
-    return await navigator.mediaDevices.getDisplayMedia({
-        audio: true, 
-        video: { mediaSource: "screen"}
-    });
+    const mimeType = 'video/webm';
+    shouldStop = false;
+    const constraints = {
+      video: true
+    };
+    const displayStream = await navigator.mediaDevices.getDisplayMedia({video: true, audio: true});
+    // voiceStream for recording voice with screen recording
+    const voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    let tracks = [...displayStream.getTracks(), ...voiceStream.getAudioTracks()]
+    const stream = new MediaStream(tracks);
+    handleRecord({stream, mimeType})
+  }
+// async function recordScreen() {
+//     return await navigator.mediaDevices.getDisplayMedia({
+//         audio: true, 
+//         video: { mediaSource: "screen"}
+//     });
+// }
+async function recordAudio() {
+    const mimeType = 'audio/webm';
+    shouldStop = false;
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    handleRecord({stream, mimeType})
+}
+async function recordVideo() {
+    const mimeType = 'video/webm';
+    shouldStop = false;
+    const constraints = {
+      audio: true,
+      video: true,
+    };
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleRecord({stream, mimeType})
 }
 var data = [];
 var mediaRecorder;
@@ -525,12 +545,60 @@ const startRecording = (stream) => {
         delete mediaRecorder;
     }
 }
-
+const handleRecord = function ({stream, mimeType}) {
+    // to collect stream chunks
+    let recordedChunks = [];
+    stopped = false;
+    const mediaRecorder = new MediaRecorder(stream);
+  
+    mediaRecorder.ondataavailable = function (e) {
+      if (e.data.size > 0) {
+        recordedChunks.push(e.data);
+      }
+      // shouldStop => forceStop by user
+      if (shouldStop === true && stopped === false) {
+        mediaRecorder.stop();
+        stopped = true;
+      }
+    };
+    mediaRecorder.onstop = function () {
+      const blob = new Blob(recordedChunks, {
+        type: mimeType
+      });
+      recordedChunks = []
+      const filename = window.prompt('Enter file name'); // input filename from user for download
+      const downloadLink = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      downloadLink.href = URL.createObjectURL(blob); // create download link for the file
+      downloadLink.download = `${filename}.webm`; // naming the file with user provided name
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      setTimeout(() => {
+          document.body.removeChild(downloadLink);
+        //   window.URL.revokeObjectURL(url);
+      }
+      , 100);
+      let tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+      delete mediaRecorder;
+    //   stopRecord();
+    };
+  
+    mediaRecorder.start(200); // here 200ms is interval of chunk collection
+  };
 
 const stopRecording = () => {
     console.log("stop recording");
     const blob = new Blob(data, { type: data[0].type });
     mediaRecorder.stop();
+    // stream.stop();
+    // if(stream)
+    // {
+    //     let tracks = stream.getTracks();
+
+    //     tracks.forEach(track => track.stop());
+    // }
+    // console.log(stream);
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
