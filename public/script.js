@@ -145,7 +145,7 @@ const addVideoStream = (video, stream, peerId, user) => {
 
     video.srcObject = stream;
     video.setAttribute("peer", peerId);
-    // video.setAttribute("name", user.name);
+    video.setAttribute("name", user.name);
 
     if (peerId == null) {
         // video.classList.add("mirror");
@@ -156,11 +156,15 @@ const addVideoStream = (video, stream, peerId, user) => {
         video.play();
     });
 
-  
+   
 
-    // videoWrapper.appendChild(elementsWrapper);
-    // videoWrapper.appendChild(namePara);
+    // video.append(elementsWrapper);
+    videoWrapper.appendChild(pinBtn);
     videoWrapper.appendChild(video);
+    // videoWrapper.appendChild(namePara);
+
+    
+    // videoWrapper.appendChild(namePara);
 
      videoGrid.append(videoWrapper);
      const observer = new MutationObserver((mutationsList, observer) => {
@@ -175,8 +179,26 @@ const addVideoStream = (video, stream, peerId, user) => {
         childList: true,
     });
     // console.log(videoGrid);
+    eventAdd(pinBtn);
+
 
 }
+
+const eventAdd = (element) => {
+    element.addEventListener("click", (e) => {
+        let videoWrapper = e.target.parentElement;
+        // console.log(e.target);
+        if(!e.target.classList.contains("pin-button")){
+            videoWrapper = e.target.parentElement.parentElement;
+        }
+        // if (e.target.getAttribute("name") == "expand-outline") {
+        //     e.target.innerHTML = `<ion-icon name="contract-outline"></ion-icon>`;
+        // } else {
+        //     e.target.innerHTML = `<ion-icon name="expand-outline"></ion-icon>`;
+        // }
+        videoWrapper.classList.toggle("zoom-video");
+    });
+};
 
 const meetingToggleBtn = document.getElementById("meeting-toggle");
 
